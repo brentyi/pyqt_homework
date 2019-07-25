@@ -14,42 +14,65 @@ class ControlDock(QDockWidget):
         self.setWidget(contents)
 
         # Add function selector to layout
+        label_combobox = QLabel()
+        label_combobox.setText("<b>Function:</b>")
+        layout.addWidget(label_combobox)
+        layout.setAlignment(label_combobox, Qt.AlignCenter)
+
         combobox_function = QComboBox()
-        self.function_map = {}
+        self._function_map = {}
         for function in function_list:
             combobox_function.addItem(function.name)
-            self.function_map[function.name] = function
-        combobox_function.currentTextChanged.connect(self.update_plot)
+            self._function_map[function.name] = function
         layout.addWidget(combobox_function)
 
         # Add "A" slider to layout
         slider_a = FancySliderWidget("A", -10.0, 10.0, 20)
-        slider_a.valueChanged.connect(self.update_plot)
         layout.addWidget(slider_a)
 
         # Add "B" slider to layout
         slider_b = FancySliderWidget("B", -10.0, 10.0, 20)
-        slider_b.valueChanged.connect(self.update_plot)
         layout.addWidget(slider_b)
 
         # Store some elements for later access
-        self.layout = layout
-        self.combobox_function = combobox_function
-        self.slider_a = slider_a
-        self.slider_b = slider_b
-        self.plot_canvas = plot_canvas
+        self._layout = layout
+        self._combobox_function = combobox_function
+        self._slider_a = slider_a
+        self._slider_b = slider_b
+        self._plot_canvas = plot_canvas
 
         # Render initial state
         self.update_plot()
 
+        # Event handlers
+        combobox_function.currentTextChanged.connect(self.update_plot)
+        slider_a.valueChanged.connect(self.update_plot)
+        slider_b.valueChanged.connect(self.update_plot)
+        self.dockLocationChanged.connect(self.update_dock_orientation)
+
     @pyqtSlot()
     def update_plot(self):
         # Update plot
-        function = self.function_map[self.combobox_function.currentText()]
-        function.a = self.slider_a.value()
-        function.b = self.slider_b.value()
+        function = self._function_map[self._combobox_function.currentText()]
+        function.a = self._slider_a.value()
+        function.b = self._slider_b.value()
 
-        self.plot_canvas.plot(function)
+        self._plot_canvas.plot(function)
+
+    @pyqtSlot(Qt.DockWidgetArea)
+    def update_dock_orientation(self, area):
+        if area in (Qt.LeftDockWidgetArea, Qt.RightDockWidgetArea):
+            self.setMaximumWidth(120)
+            self.setMaximumHeight(2560)
+            self._layout.setDirection(QBoxLayout.TopToBottom)
+            self._slider_a.setOrientation(Qt.Vertical)
+            self._slider_b.setOrientation(Qt.Vertical)
+        else:
+            self.setMaximumWidth(2560)
+            self.setMaximumHeight(120)
+            self._layout.setDirection(QBoxLayout.LeftToRight)
+            self._slider_a.setOrientation(Qt.Horizontal)
+            self._slider_b.setOrientation(Qt.Horizontal)
 
 
 class FancySliderWidget(QWidget):
@@ -79,6 +102,12 @@ class FancySliderWidget(QWidget):
         layout.addWidget(slider)
         layout.addWidget(val_label)
 
+        # Store some elements for later access
+        self._name_label = name_label
+        self._slider = slider
+        self._val_label = val_label
+        self._layout = layout
+
         # Elevate some slider properties; this lets us maintain a similar
         # interface as a normal QSlider object
         slider.valueChanged.connect(
@@ -90,3 +119,17 @@ class FancySliderWidget(QWidget):
 
         # Render initial state
         self.valueChanged.emit(self.value())
+
+    @pyqtSlot(Qt.Orientation)
+    def setOrientation(self, orientation):
+        self._slider.setOrientation(orientation)
+        if orientation == Qt.Vertical:
+            direction = QBoxLayout.TopToBottom
+            alignment = Qt.AlignHCenter
+        elif orientation == Qt.Horizontal:
+            direction = QBoxLayout.LeftToRight
+            alignment = Qt.AlignVCenter
+
+        self._layout.setDirection(direction)
+        for w in (self._name_label, self._slider, self._val_label):
+            self._layout.setAlignment(w, alignment)
