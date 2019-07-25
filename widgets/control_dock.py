@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt
 class ControlDock(QDockWidget):
     def __init__(self, function_list, plot_canvas, parent=None):
         # Call superclass constructor
-        QDockWidget.__init__(self, parent)
+        super().__init__(parent)
 
         # Initialize layout
         contents = QWidget()
@@ -79,7 +79,7 @@ class FancySliderWidget(QWidget):
     valueChanged = pyqtSignal([float])
 
     def __init__(self, name, min_val=0, max_val=100, ticks=100, parent=None):
-        QWidget.__init__(self, parent)
+        super().__init__(parent)
 
         layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 

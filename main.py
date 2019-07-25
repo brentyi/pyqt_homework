@@ -1,17 +1,13 @@
 #!/usr/bin/python3
 
 import sys
+import signal
+
+import widgets
+import functions
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtCore import Qt
-
-import numpy as np
-import signal
-
-import components
-import functions
-
-signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class App(QMainWindow):
@@ -21,7 +17,7 @@ class App(QMainWindow):
 
     def initUI(self):
         # Window setup
-        self.setWindowTitle("Function Plotter")
+        self.setWindowTitle("Plotting Tool")
         self.setGeometry(100, 100, 1280, 720)
 
         # Function list
@@ -32,11 +28,11 @@ class App(QMainWindow):
         ]
 
         # Add function plot
-        plot_canvas = components.plot_canvas.PlotCanvas()
+        plot_canvas = widgets.PlotCanvas()
         self.setCentralWidget(plot_canvas)
 
         # Add control dock
-        dock = components.ControlDock(function_list, plot_canvas, self)
+        dock = widgets.ControlDock(function_list, plot_canvas, self)
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
         # Show app
@@ -44,6 +40,10 @@ class App(QMainWindow):
 
 
 if __name__ == '__main__':
+    # Exit on CTRL + C
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    # Run application
     app = QApplication(sys.argv)
     ex = App()
     sys.exit(app.exec_())

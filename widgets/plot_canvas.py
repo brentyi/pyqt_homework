@@ -6,7 +6,7 @@ import numpy as np
 class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None):
         # Initialize FigureCanvas
-        FigureCanvas.__init__(self, plt.Figure())
+        super().__init__(plt.Figure())
         self.setParent(parent)
 
     def plot(self, function):
