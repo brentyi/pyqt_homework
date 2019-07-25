@@ -3,6 +3,7 @@
 import abc
 import numpy as np
 
+
 class FunctionBase(abc.ABC):
     """Abstract base class for arbitrary 2-parameter functions.
 
@@ -13,7 +14,7 @@ class FunctionBase(abc.ABC):
     Attributes:
         description (str): Short description of the function.
         a (float): Constant parameter a, for use by subclasses.
-        b (float): Constant parameter b, for use by subclasses.  
+        b (float): Constant parameter b, for use by subclasses.
     """
 
     description = ""
@@ -64,6 +65,7 @@ class FunctionMystery(FunctionBase):
             output += self.b * np.cos(x) % a
         return output
 
+
 if __name__ == "__main__":
     sine = FunctionSine(a=1, b=1)
     print("sin(0) =\t", sine(0.0))
@@ -73,4 +75,3 @@ if __name__ == "__main__":
 
     mystery = FunctionPolynomial(a=1.8, b=2.3)
     print("mystery(5) =\t", mystery(5))
-
