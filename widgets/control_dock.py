@@ -42,16 +42,16 @@ class ControlDock(QDockWidget):
         self._plot_canvas = plot_canvas
 
         # Render initial state
-        self.update_plot()
+        self.updatePlot()
 
         # Event handlers
-        combobox_function.currentTextChanged.connect(self.update_plot)
-        slider_a.valueChanged.connect(self.update_plot)
-        slider_b.valueChanged.connect(self.update_plot)
-        self.dockLocationChanged.connect(self.update_dock_orientation)
+        combobox_function.currentTextChanged.connect(self.updatePlot)
+        slider_a.valueChanged.connect(self.updatePlot)
+        slider_b.valueChanged.connect(self.updatePlot)
+        self.dockLocationChanged.connect(self.updateDockOrientation)
 
     @pyqtSlot()
-    def update_plot(self):
+    def updatePlot(self):
         # Update plot
         function = self._function_map[self._combobox_function.currentText()]
         function.a = self._slider_a.value()
@@ -60,7 +60,7 @@ class ControlDock(QDockWidget):
         self._plot_canvas.plot(function)
 
     @pyqtSlot(Qt.DockWidgetArea)
-    def update_dock_orientation(self, area):
+    def updateDockOrientation(self, area):
         if area in (Qt.LeftDockWidgetArea, Qt.RightDockWidgetArea):
             self.setMaximumWidth(120)
             self.setMaximumHeight(2560)
