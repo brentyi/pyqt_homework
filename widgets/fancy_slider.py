@@ -1,12 +1,18 @@
 from PyQt5.QtWidgets import QBoxLayout, QWidget, QSlider, QLabel
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt
 
+
 class FancySlider(QWidget):
+    """
+    Qt widget that mimics the QSlider class, but adds some labels and scaling
+    functionality.
+    """
     valueChanged = pyqtSignal([float])
 
     def __init__(self, name, min_val=0, max_val=100, ticks=100, parent=None):
         super().__init__(parent)
 
+        # Creat layout
         layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
         # Create slider object
@@ -19,7 +25,7 @@ class FancySlider(QWidget):
 
         # Create labels
         name_label = QLabel()
-        name_label.setText("<b>{}:</b>".format(name))
+        name_label.setText(f"<b>{name}:</b>")
 
         val_label = QLabel()
 
@@ -28,14 +34,14 @@ class FancySlider(QWidget):
         layout.addWidget(slider)
         layout.addWidget(val_label)
 
-        # Store some elements for later access
+        # Save some elements for later access
         self._name_label = name_label
         self._slider = slider
         self._val_label = val_label
         self._layout = layout
 
-        # Elevate some slider properties; this lets us maintain a similar
-        # interface as a normal QSlider object
+        # Surface some slider properties; this lets us maintain a similar
+        # interface to the normal QSlider object
         slider.valueChanged.connect(
             lambda: self.valueChanged.emit(
                 self.value()))
@@ -48,6 +54,8 @@ class FancySlider(QWidget):
 
     @pyqtSlot(Qt.Orientation)
     def setOrientation(self, orientation):
+        # Match QSlider.setOrientation() interface
+
         self._slider.setOrientation(orientation)
         if orientation == Qt.Vertical:
             direction = QBoxLayout.TopToBottom

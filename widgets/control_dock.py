@@ -5,9 +5,17 @@ from .fancy_slider import FancySlider
 
 
 class ControlDock(QDockWidget):
+    """
+    Qt widget containing a dropdown for selecting the function to plot and
+    modifying its parameters.
+    """
+
     def __init__(self, function_list, plot_canvas, parent=None):
-        # Call superclass constructor
         super().__init__(parent)
+
+        # Prevent closing
+        self.setFeatures(QDockWidget.DockWidgetMovable |
+                         QDockWidget.DockWidgetFloatable)
 
         # Initialize layout
         contents = QWidget()
@@ -15,34 +23,39 @@ class ControlDock(QDockWidget):
         layout.setContentsMargins(10, 0, 10, 20)
         self.setWidget(contents)
 
-        # Add function selector to layout
+        # Add function selection dropdown to layout
         label_combobox = QLabel()
         label_combobox.setText("<b>Function:</b>")
         layout.addWidget(label_combobox)
         layout.setAlignment(label_combobox, Qt.AlignCenter)
-
         combobox_function = QComboBox()
+
+        # Add functions to dropdown, create map so we can associate values back
+        # with original function objects
         self._function_map = {}
         for function in function_list:
-            combobox_function.addItem(function.name)
-            self._function_map[function.name] = function
+            item_text = f"{function.name}: {function.description}"
+            combobox_function.addItem(item_text)
+            self._function_map[item_text] = function
         layout.addWidget(combobox_function)
 
-        # Add "A" slider to layout
+        # Add "A" parameter slider to layout
         slider_a = FancySlider("A", -10.0, 10.0, 20)
         layout.addWidget(slider_a)
 
-        # Add "B" slider to layout
+        # Add "B" parameter slider to layout
         slider_b = FancySlider("B", -10.0, 10.0, 20)
         layout.addWidget(slider_b)
 
-        # Event handlers
+        # Event handlers: update the plot whenever a relevant change is made
         combobox_function.currentTextChanged.connect(self.updatePlot)
         slider_a.valueChanged.connect(self.updatePlot)
         slider_b.valueChanged.connect(self.updatePlot)
+
+        # Event handler: rotate our dock based on where the user puts it
         self.dockLocationChanged.connect(self.updateDockOrientation)
 
-        # Store some elements for later access
+        # Save some elements for later access
         self._layout = layout
         self._combobox_function = combobox_function
         self._slider_a = slider_a
@@ -59,10 +72,11 @@ class ControlDock(QDockWidget):
         function.a = self._slider_a.value()
         function.b = self._slider_b.value()
 
-        self._plot_canvas.plot(function)
+        self._plot_canvas.plotFunction(function)
 
     @pyqtSlot(Qt.DockWidgetArea)
     def updateDockOrientation(self, area):
+        # Rotate layout based on where we're docked
         if area in (Qt.LeftDockWidgetArea, Qt.RightDockWidgetArea):
             self.setMaximumWidth(120)
             self.setMaximumHeight(2560)

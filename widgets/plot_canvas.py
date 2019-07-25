@@ -3,13 +3,16 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
+
 class PlotCanvas(FigureCanvas):
+    """Qt widget that plots an arbitrary function via matplotlib."""
+
     def __init__(self, parent=None):
         # Initialize FigureCanvas
         super().__init__(plt.Figure())
         self.setParent(parent)
 
-    def plot(self, function):
+    def plotFunction(self, function):
         # Clear figure
         self.figure.clf()
 
@@ -21,14 +24,10 @@ class PlotCanvas(FigureCanvas):
 
         # Set title and labels
         ax.set_title(
-            function.description +
-            ", A = {}, B = {}".format(
-                *np.round((function.a, function.b), 2)
-            )
+            f"{function.description}, A = {function.a:.2}, B = {function.b:.2}"
         )
         ax.set_xlabel("x")
         ax.set_ylabel("f(x)")
 
         # Render
         self.draw()
-

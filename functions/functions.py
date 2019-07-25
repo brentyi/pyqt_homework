@@ -1,15 +1,16 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import abc
 import numpy as np
 
 
 class FunctionBase(abc.ABC):
-    """Abstract base class for arbitrary 2-parameter functions.
+    """
+    Abstract base class for arbitrary 2-parameter functions.
 
     Args:
-        a (float): Initial value for attribute a. Defaults to 0.
-        b (float): Initial value for attribute b. Defaults to 0.
+        a (float): Initial value for parameter a. Defaults to 0.
+        b (float): Initial value for parameter b. Defaults to 0.
 
     Attributes:
         name (str): Name of the function.
@@ -25,7 +26,8 @@ class FunctionBase(abc.ABC):
         self.a = a
         self.b = b
 
-    """Evaluates our arbitrary function f(x).
+    """
+    Evaluates our arbitrary function f(x).
 
     Args:
         x (float): Input for function.
@@ -59,15 +61,19 @@ class Polynomial(FunctionBase):
 
 
 class Mystery(FunctionBase):
-    """A mysterious two-parameter function that doesn't have a simple mathematical expression."""
+    """
+    A mysterious two-parameter function that might not have a simple mathematical
+    expression.
+    """
 
     name = "Mystery"
-    description = "Mystery(A, B, x)"
+    description = "???(A, B, x)"
 
     def __call__(self, x):
         output = 0
-        for _ in range(int(self.a * np.sin(x))):
-            output += np.cos(x + self.a + self.b)
+        for i in range(int(self.a * np.sin(x))):
+            for _ in range(i):
+                output += np.cos(x + self.a + self.b)
         return output
 
 
